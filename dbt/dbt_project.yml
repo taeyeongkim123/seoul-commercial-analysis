@@ -1,0 +1,16 @@
+name: seoul_commercial
+version: "1.0.0"
+config-version: 2
+
+profile: seoul_commercial
+
+model-paths: ["models"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  seoul_commercial:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

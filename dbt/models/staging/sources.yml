@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: raw_sales
+      - name: raw_footfall
+      - name: raw_change_index
+      - name: raw_stores

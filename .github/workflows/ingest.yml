@@ -1,0 +1,31 @@
+name: Scheduled data ingestion
+
+on:
+  schedule:
+    # 매주 월요일 09:00 KST (00:00 UTC)
+    - cron: "0 0 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch Seoul Open Data
+        env:
+          SEOUL_API_KEY: ${{ secrets.SEOUL_API_KEY }}
+        run: python scripts/fetch_seoul_data.py
+
+      - name: Run dbt
+        working-directory: dbt
+        run: |
+          dbt run
+          dbt test

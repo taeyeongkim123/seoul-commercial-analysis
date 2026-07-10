@@ -1,0 +1,7 @@
+seoul_commercial:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/processed/seoul_commercial.duckdb"
+      threads: 4
