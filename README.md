@@ -93,7 +93,8 @@ seoul-commercial-analysis/
 ## 로드맵
 
 - [x] 프로젝트 스켈레톤 및 수집 파이프라인
-- [ ] dbt 변환 (매출 트렌드, 업종별 경쟁도 마트)
-- [ ] Streamlit 대시보드 (지도 기반 상권 시각화)
-- [ ] 데이터 품질 검증 (dbt tests)
+- [x] dbt 변환 (매출 트렌드 `mart_district_sales_trend`, 업종별 경쟁도 `mart_industry_competition`, 상권 위험도 `mart_district_risk`)
+- [x] Streamlit 대시보드 (테이블 미리보기 — 지도 시각화는 다음 단계)
+- [ ] 데이터 품질 검증 (dbt tests: not_null/unique 등)
+- [ ] 지도 기반 상권 시각화 (pydeck)
 - [ ] 상권 쇠퇴 위험도 예측 모델 (scikit-learn)

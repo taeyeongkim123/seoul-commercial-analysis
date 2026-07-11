@@ -5,6 +5,7 @@ list_total_count를 확인하며 1000건 단위로 페이지네이션한다.
 """
 import json
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -23,7 +24,7 @@ PAGE_SIZE = 1000
 SERVICES = {
     "sales": "VwsmTrdarSelngQq",       # 상권별 추정매출
     "footfall": "VwsmTrdarFlpopQq",    # 상권별 추정 유동인구
-    "change_index": "VwsmTrdarChgIx",  # 상권변화지표
+    "change_index": "VwsmTrdarIxQq",   # 상권변화지표
     "stores": "VwsmTrdarStorQq",       # 상권-점포 정보
 }
 
@@ -78,8 +79,13 @@ def load_to_duckdb(service_name: str, rows: list[dict]) -> None:
     con.close()
 
 
-def main() -> None:
+def main(force: bool = False) -> None:
     for name, service_id in SERVICES.items():
+        raw_path = RAW_DIR / f"{name}.json"
+        if raw_path.exists() and not force:
+            print(f"[skip] {name}: 이미 {raw_path} 존재, 건너뜀 (재수집하려면 --force)")
+            continue
+
         print(f"[fetch] {name} ({service_id}) 수집 중...")
         rows = fetch_service(service_id)
         print(f"[fetch] {name}: {len(rows)}건 수집")
@@ -89,4 +95,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(force="--force" in sys.argv)

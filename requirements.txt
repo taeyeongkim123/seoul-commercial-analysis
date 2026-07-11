@@ -3,6 +3,7 @@ python-dotenv>=1.0
 duckdb>=0.10
 pandas>=2.2
 dbt-duckdb>=1.7
+mashumaro>=3.15  # dbt-core's pinned mashumaro fails to import on Python 3.14+; force a newer one
 streamlit>=1.32
 pydeck>=0.8
 pytest>=8.0

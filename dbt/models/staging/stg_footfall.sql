@@ -1,2 +1,29 @@
--- TODO: 실제 컬럼명 확인 후 명시적 select + rename 하도록 교체할 것.
-select * from {{ source('raw', 'raw_footfall') }}
+select
+    STDR_YYQU_CD as std_yyqu,
+    TRDAR_SE_CD as district_type_code,
+    TRDAR_SE_CD_NM as district_type_name,
+    TRDAR_CD as district_code,
+    TRDAR_CD_NM as district_name,
+    TOT_FLPOP_CO as total_footfall_count,
+    ML_FLPOP_CO as male_footfall_count,
+    FML_FLPOP_CO as female_footfall_count,
+    AGRDE_10_FLPOP_CO as age_10s_footfall_count,
+    AGRDE_20_FLPOP_CO as age_20s_footfall_count,
+    AGRDE_30_FLPOP_CO as age_30s_footfall_count,
+    AGRDE_40_FLPOP_CO as age_40s_footfall_count,
+    AGRDE_50_FLPOP_CO as age_50s_footfall_count,
+    AGRDE_60_ABOVE_FLPOP_CO as age_60s_plus_footfall_count,
+    TMZON_00_06_FLPOP_CO as time_00_06_footfall_count,
+    TMZON_06_11_FLPOP_CO as time_06_11_footfall_count,
+    TMZON_11_14_FLPOP_CO as time_11_14_footfall_count,
+    TMZON_14_17_FLPOP_CO as time_14_17_footfall_count,
+    TMZON_17_21_FLPOP_CO as time_17_21_footfall_count,
+    TMZON_21_24_FLPOP_CO as time_21_24_footfall_count,
+    MON_FLPOP_CO as mon_footfall_count,
+    TUES_FLPOP_CO as tue_footfall_count,
+    WED_FLPOP_CO as wed_footfall_count,
+    THUR_FLPOP_CO as thu_footfall_count,
+    FRI_FLPOP_CO as fri_footfall_count,
+    SAT_FLPOP_CO as sat_footfall_count,
+    SUN_FLPOP_CO as sun_footfall_count
+from {{ source('raw', 'raw_footfall') }}
