@@ -53,3 +53,10 @@ models:
         tests: [not_null]
       - name: lat
         tests: [not_null]
+
+  - name: stg_district_clusters
+    columns:
+      - name: district_code
+        tests: [not_null, unique]
+      - name: cluster_id
+        tests: [not_null]

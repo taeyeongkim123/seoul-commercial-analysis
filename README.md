@@ -8,19 +8,20 @@
 데이터 수집 (Python + Seoul Open API)
         │
         ▼
-   raw layer (DuckDB)
+   raw layer (DuckDB) ──▶ 상권 군집화 (K-means, scripts/cluster_districts.py)
+        │                        │
+        ▼                        ▼
+   dbt 변환 (staging → marts, 군집 결과 포함)
         │
         ▼
-   dbt 변환 (staging → marts)
-        │
-        ▼
- Streamlit 대시보드 (지도 시각화)
+ Streamlit 대시보드 (지도 + 트렌드 시각화)
 ```
 
 - **수집**: `scripts/fetch_seoul_data.py` — 서울 열린데이터광장 API 호출, raw 데이터를 DuckDB에 적재
 - **저장**: DuckDB (`data/seoul_commercial.duckdb`, 서버 불필요)
+- **군집화**: `scripts/cluster_districts.py` — 매출·유동인구·점포구조 특성으로 상권 유형을 K-means 군집화 (raw 레이어만 참조, dbt보다 먼저 실행)
 - **변환**: dbt-duckdb (`dbt/` — staging/marts 레이어 분리)
-- **시각화**: Streamlit + pydeck (`dashboard/app.py`)
+- **시각화**: Streamlit + pydeck + Altair (`dashboard/app.py`)
 - **자동화**: GitHub Actions로 주기적 데이터 갱신 (`.github/workflows/ingest.yml`)
 
 ## 데이터 출처
@@ -58,7 +59,16 @@ cp .env.example .env
 python scripts/fetch_seoul_data.py
 ```
 
-### 4. dbt 변환
+### 4. 상권 군집화 (dbt보다 먼저 실행)
+
+매출·유동인구·점포구조 특성으로 상권을 K-means 군집화해 `raw_district_clusters` 테이블을 만듭니다.
+dbt의 `stg_district_clusters`/`mart_district_map`이 이 테이블을 참조하므로 **dbt run 이전에** 실행해야 합니다.
+
+```bash
+python scripts/cluster_districts.py
+```
+
+### 5. dbt 변환
 
 ```bash
 cd dbt
@@ -66,13 +76,13 @@ dbt run
 dbt test
 ```
 
-### 5. 대시보드 실행
+### 6. 대시보드 실행
 
 ```bash
 streamlit run dashboard/app.py
 ```
 
-### 6. (선택) 예측 모델 학습
+### 7. (선택) 예측 모델 학습
 
 다음 분기 유동인구 감소 여부를 예측하는 RandomForest 모델을 시계열 홀드아웃으로 학습/평가합니다.
 
@@ -106,7 +116,9 @@ seoul-commercial-analysis/
 
 - [x] 프로젝트 스켈레톤 및 수집 파이프라인
 - [x] dbt 변환 (매출 트렌드 `mart_district_sales_trend`, 업종별 경쟁도 `mart_industry_competition`, 상권 위험도 `mart_district_risk`)
-- [x] 데이터 품질 검증 (dbt tests 32개: not_null/unique/accepted_values)
-- [x] 지도 기반 상권 시각화 (`mart_district_map` + pydeck, 자치구/위험도 필터)
+- [x] 데이터 품질 검증 (dbt tests 35개: not_null/unique/accepted_values)
+- [x] 지도 기반 상권 시각화 (`mart_district_map` + pydeck, 자치구/위험도/군집 필터)
+- [x] 상권 특성 기반 K-means 군집화 (`scripts/cluster_districts.py`, 실루엣 점수로 k 자동 선택 + 군집 자동 라벨링, 지도에 색상으로 표시)
+- [x] 트렌드 대시보드 (분기별 매출·유동인구 추이, 자치구별 유동인구, 지역별 업종 랭킹)
 - [x] 상권 유동인구 감소 예측 모델 (scikit-learn RandomForest, 시계열 홀드아웃 평가 — 결과와 한계는 `models/report.md` 참고)
 - [ ] 예측 모델 성능 개선 (등락폭 회귀, 계절성/이벤트 캘린더 피처 등)

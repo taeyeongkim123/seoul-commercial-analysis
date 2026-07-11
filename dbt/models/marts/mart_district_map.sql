@@ -36,8 +36,11 @@ select
     risk.change_index_name,
     risk.heuristic_risk_flag,
     risk.qoq_footfall_growth_pct,
-    sales_latest.total_monthly_sales_amount
+    sales_latest.total_monthly_sales_amount,
+    c.cluster_id,
+    c.cluster_label
 from {{ ref('stg_district_areas') }} a
 left join risk on a.district_code = risk.district_code
 left join sales_latest on a.district_code = sales_latest.district_code
+left join {{ ref('stg_district_clusters') }} c on a.district_code = c.district_code
 where a.lon is not null and a.lat is not null

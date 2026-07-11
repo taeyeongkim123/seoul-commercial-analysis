@@ -9,3 +9,4 @@ sources:
       - name: raw_change_index
       - name: raw_stores
       - name: raw_areas
+      - name: raw_district_clusters
