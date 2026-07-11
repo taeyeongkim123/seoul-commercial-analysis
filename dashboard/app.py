@@ -278,6 +278,11 @@ with map_tab:
         filtered["radius"] = (
             filtered["total_monthly_sales_amount"].fillna(0).clip(lower=0) ** 0.5 / 40
         ).clip(lower=30, upper=400)
+        filtered["sales_manwon_display"] = (
+            (filtered["total_monthly_sales_amount"].fillna(0) / 10000)
+            .round(0)
+            .apply(lambda v: f"{v:,.0f}만원")
+        )
 
         st.caption(f"{len(filtered)}개 상권 표시 중 (전체 {len(geo_df)}개)")
 
@@ -299,7 +304,7 @@ with map_tab:
                 "상권변화지표: {change_index_name}<br/>"
                 "유동인구 QoQ: {qoq_footfall_growth_pct}%<br/>"
                 "위험 플래그: {heuristic_risk_flag}<br/>"
-                "당분기 매출: {total_monthly_sales_amount}"
+                "당분기 매출: {sales_manwon_display}"
             )
         }
         st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state, tooltip=tooltip))
