@@ -8,3 +8,4 @@ sources:
       - name: raw_footfall
       - name: raw_change_index
       - name: raw_stores
+      - name: raw_areas

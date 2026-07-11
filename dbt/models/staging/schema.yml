@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: stg_sales
+    columns:
+      - name: std_yyqu
+        tests: [not_null]
+      - name: district_code
+        tests: [not_null]
+      - name: industry_code
+        tests: [not_null]
+      - name: monthly_sales_amount
+        tests: [not_null]
+
+  - name: stg_footfall
+    columns:
+      - name: std_yyqu
+        tests: [not_null]
+      - name: district_code
+        tests: [not_null]
+      - name: total_footfall_count
+        tests: [not_null]
+
+  - name: stg_change_index
+    columns:
+      - name: std_yyqu
+        tests: [not_null]
+      - name: district_code
+        tests: [not_null]
+      - name: change_index_code
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["LL", "LH", "HL", "HH"]
+
+  - name: stg_stores
+    columns:
+      - name: std_yyqu
+        tests: [not_null]
+      - name: district_code
+        tests: [not_null]
+      - name: industry_code
+        tests: [not_null]
+      - name: store_count
+        tests: [not_null]
+
+  - name: stg_district_areas
+    columns:
+      - name: district_code
+        tests: [not_null, unique]
+      - name: lon
+        tests: [not_null]
+      - name: lat
+        tests: [not_null]

@@ -28,8 +28,9 @@
 [서울 열린데이터광장](https://data.seoul.go.kr) — 우리마을가게 상권분석서비스
 - 상권별 추정매출 (`VwsmTrdarSelngQq`)
 - 상권별 추정 유동인구 (`VwsmTrdarFlpopQq`)
-- 상권변화지표 (`VwsmTrdarChgIx`)
+- 상권변화지표 (`VwsmTrdarIxQq`)
 - 상권-점포 정보 (`VwsmTrdarStorQq`)
+- 상권영역 중심좌표 (`TbgisTrdarRelm`, TM좌표 → WGS84 변환 후 지도 시각화에 사용)
 
 ## 시작하기
 
@@ -71,6 +72,16 @@ dbt test
 streamlit run dashboard/app.py
 ```
 
+### 6. (선택) 예측 모델 학습
+
+다음 분기 유동인구 감소 여부를 예측하는 RandomForest 모델을 시계열 홀드아웃으로 학습/평가합니다.
+
+```bash
+python scripts/train_district_risk_model.py
+```
+
+결과는 `models/report.md`에 저장됩니다 (모델 바이너리는 재현용 스크립트만 커밋하고 git에는 포함하지 않습니다).
+
 ## CI/CD
 
 `.github/workflows/ingest.yml`이 매주 월요일 자동으로 데이터를 수집하고 dbt를 실행합니다.
@@ -83,6 +94,7 @@ seoul-commercial-analysis/
 ├── scripts/           # 데이터 수집 스크립트
 ├── dbt/                # dbt 프로젝트 (staging/marts 모델)
 ├── dashboard/          # Streamlit 대시보드
+├── models/             # 예측 모델 학습 산출물 (report.md만 커밋)
 ├── data/
 │   ├── raw/            # 원본 API 응답 캐시
 │   └── processed/      # DuckDB 파일
@@ -94,7 +106,7 @@ seoul-commercial-analysis/
 
 - [x] 프로젝트 스켈레톤 및 수집 파이프라인
 - [x] dbt 변환 (매출 트렌드 `mart_district_sales_trend`, 업종별 경쟁도 `mart_industry_competition`, 상권 위험도 `mart_district_risk`)
-- [x] Streamlit 대시보드 (테이블 미리보기 — 지도 시각화는 다음 단계)
-- [ ] 데이터 품질 검증 (dbt tests: not_null/unique 등)
-- [ ] 지도 기반 상권 시각화 (pydeck)
-- [ ] 상권 쇠퇴 위험도 예측 모델 (scikit-learn)
+- [x] 데이터 품질 검증 (dbt tests 32개: not_null/unique/accepted_values)
+- [x] 지도 기반 상권 시각화 (`mart_district_map` + pydeck, 자치구/위험도 필터)
+- [x] 상권 유동인구 감소 예측 모델 (scikit-learn RandomForest, 시계열 홀드아웃 평가 — 결과와 한계는 `models/report.md` 참고)
+- [ ] 예측 모델 성능 개선 (등락폭 회귀, 계절성/이벤트 캘린더 피처 등)

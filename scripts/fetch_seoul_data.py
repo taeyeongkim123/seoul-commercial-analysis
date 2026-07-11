@@ -14,6 +14,8 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
+from geo import tm_to_wgs84
+
 load_dotenv()
 
 API_KEY = os.environ["SEOUL_API_KEY"]
@@ -26,6 +28,7 @@ SERVICES = {
     "footfall": "VwsmTrdarFlpopQq",    # 상권별 추정 유동인구
     "change_index": "VwsmTrdarIxQq",   # 상권변화지표
     "stores": "VwsmTrdarStorQq",       # 상권-점포 정보
+    "areas": "TbgisTrdarRelm",         # 상권영역(중심좌표, TM좌표계)
 }
 
 RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
@@ -74,6 +77,9 @@ def save_raw(service_name: str, rows: list[dict]) -> Path:
 def load_to_duckdb(service_name: str, rows: list[dict]) -> None:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows)
+    if service_name == "areas":
+        lonlat = df.apply(lambda r: tm_to_wgs84(r["XCNTS_VALUE"], r["YDNTS_VALUE"]), axis=1)
+        df["LON"], df["LAT"] = zip(*lonlat)
     con = duckdb.connect(str(DB_PATH))
     con.execute(f"CREATE OR REPLACE TABLE raw_{service_name} AS SELECT * FROM df")
     con.close()
